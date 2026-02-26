@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>HADOLİN — Yeni Müşteri</title>
+  <style>
+    :root { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial; }
+    body { margin: 0; background:#0b1220; color:#eaf0ff; }
+    .wrap { max-width: 520px; margin: 0 auto; padding: 18px; }
+    .card { background:#111b33; border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:16px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+    h1 { font-size: 18px; margin: 0 0 10px; }
+    .sub { opacity:.8; font-size: 12px; margin-bottom: 14px; }
+    label { display:block; font-size: 12px; opacity:.85; margin: 12px 0 6px; }
+    input, select, textarea {
+      width:100%; box-sizing:border-box; padding:12px; border-radius:12px;
+      border:1px solid rgba(255,255,255,.10); background:#0c142b; color:#eaf0ff;
+    }
+    textarea { min-height: 90px; resize: vertical; }
+    .row { display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+    .btn {
+      width:100%; margin-top: 14px; padding: 12px; border-radius: 14px; border:0;
+      background: #2b6cff; color:white; font-weight: 700; font-size: 14px;
+    }
+    .btn:disabled { opacity:.6; }
+    .msg { margin-top: 12px; font-size: 13px; }
+    .ok { color:#73ffb0; }
+    .bad { color:#ff7b7b; }
+    .tiny { opacity:.65; font-size: 11px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>HADOLİN REAL ESTATE — Yeni Müşteri</h1>
+      <div class="sub">Doldur → Kaydet → Google Sheet’e düşsün → Excel indir.</div>
+
+      <label>Ad Soyad *</label>
+      <input id="adSoyad" autocomplete="name" placeholder="Örn: Ahmet Yılmaz" />
+
+      <label>Telefon *</label>
+      <input id="telefon" inputmode="tel" autocomplete="tel" placeholder="05xx..." />
+
+      <div class="row">
+        <div>
+          <label>İl</label>
+          <input id="il" placeholder="İstanbul" />
+        </div>
+        <div>
+          <label>İlçe</label>
+          <input id="ilce" placeholder="Başakşehir" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label>Bütçe (TL)</label>
+          <input id="butce" inputmode="numeric" placeholder="9900000" />
+        </div>
+        <div>
+          <label>Tip</label>
+          <select id="tip">
+            <option value="">Seç</option>
+            <option>Daire</option>
+            <option>Villa</option>
+            <option>Arsa</option>
+            <option>Yatırım</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label>Oda</label>
+          <select id="oda">
+            <option value="">Seç</option>
+            <option>1+1</option>
+            <option>2+1</option>
+            <option>3+1</option>
+            <option>4+1</option>
+            <option>Villa</option>
+          </select>
+        </div>
+        <div>
+          <label>Metrekare</label>
+          <input id="metrekare" inputmode="numeric" placeholder="140" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label>Kaynak</label>
+          <select id="kaynak">
+            <option>Web</option>
+            <option>Instagram</option>
+            <option>WhatsApp</option>
+            <option>Sahibinden</option>
+            <option>Referans</option>
+            <option>Diğer</option>
+          </select>
+        </div>
+        <div>
+          <label>Durum</label>
+          <select id="durum">
+            <option>Yeni</option>
+            <option>Arandı</option>
+            <option>Teklif Verildi</option>
+            <option>Beklemede</option>
+            <option>Kapandı</option>
+            <option>Kaybedildi</option>
+          </select>
+        </div>
+      </div>
+
+      <label>Not</label>
+      <textarea id="not" placeholder="Karar verici kim? Ne istiyor? Ne zaman dönüş?"></textarea>
+
+      <button class="btn" id="btn" onclick="submitLead()">Kaydet → Google Sheet</button>
+      <div class="msg" id="msg"></div>
+      <div class="tiny">iPhone: Paylaş → “Ana Ekrana Ekle” yap, uygulama gibi dursun.</div>
+    </div>
+  </div>
+
+<script>
+  const ENDPOINT_URL = "PASTE_YOUR_APPS_SCRIPT_WEBAPP_URL_HERE";
+  const TOKEN = "HADOLIN-2026"; // scripttekiyle aynı olsun
+
+  function val(id){ return document.getElementById(id).value.trim(); }
+  function setMsg(text, ok){
+    const m = document.getElementById("msg");
+    m.className = "msg " + (ok ? "ok" : "bad");
+    m.textContent = text;
+  }
+
+  async function submitLead(){
+    const btn = document.getElementById("btn");
+    btn.disabled = true;
+    setMsg("Gönderiliyor...", true);
+
+    const payload = {
+      token: TOKEN,
+      adSoyad: val("adSoyad"),
+      telefon: val("telefon"),
+      il: val("il"),
+      ilce: val("ilce"),
+      butce: val("butce"),
+      tip: val("tip"),
+      oda: val("oda"),
+      metrekare: val("metrekare"),
+      kaynak: val("kaynak") || "Web",
+      durum: val("durum") || "Yeni",
+      not: val("not")
+    };
+
+    if(!payload.adSoyad || !payload.telefon){
+      setMsg("Ad Soyad ve Telefon zorunlu.", false);
+      btn.disabled = false;
+      return;
+    }
+    if(ENDPOINT_URL.includes("PASTE_YOUR")){
+      setMsg("ENDPOINT_URL ayarlanmadı. Apps Script URL’ini yapıştır.", false);
+      btn.disabled = false;
+      return;
+    }
+
+    try {
+      const res = await fetch(ENDPOINT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      });
+
+      const txt = await res.text();
+      let j = {};
+      try { j = JSON.parse(txt); } catch(e){}
+
+      if(res.ok && j.ok){
+        setMsg("Kaydedildi ✅", true);
+        ["adSoyad","telefon","il","ilce","butce","metrekare","not"].forEach(id=>{
+          const el = document.getElementById(id);
+          if(el) el.value = "";
+        });
+      } else {
+        setMsg("Hata: " + (j.error || txt || res.status), false);
+      }
+
+    } catch(err){
+      setMsg("Bağlantı hatası: " + err.message, false);
+    } finally {
+      btn.disabled = false;
+    }
+  }
+</script>
+</body>
+</html>
