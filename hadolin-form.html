@@ -122,8 +122,8 @@
   </div>
 
 <script>
-  const ENDPOINT_URL = https://script.google.com/macros/s/AKfycbw4KK8HXqzqowfIm0P5WZ-VIvD6K3Fn_o0OH8iNoxz6NaksctiaO9yrvSLkHJv-61UvrA/exec;
-  const TOKEN = "HADOLIN-2026"; // scripttekiyle aynı olsun
+  const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbw4KK8HXqzqowfIm0P5WZ-VIvD6K3Fn_o0OH8iNoxz6NaksctiaO9yrvSLkHJv-61UvrA/exec";
+  const TOKEN = "HADOLIN-2026";
 
   function val(id){ return document.getElementById(id).value.trim(); }
   function setMsg(text, ok){
@@ -157,35 +157,23 @@
       btn.disabled = false;
       return;
     }
-    if(ENDPOINT_URL.includes("PASTE_YOUR")){
-      setMsg("ENDPOINT_URL ayarlanmadı. Apps Script URL’ini yapıştır.", false);
-      btn.disabled = false;
-      return;
-    }
 
     try {
       await fetch(ENDPOINT_URL, {
-  method: "POST",
-  mode: "no-cors",
-  headers: { "Content-Type": "text/plain;charset=utf-8" },
-  body: JSON.stringify(payload)
-});
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      });
 
-// no-cors yüzünden cevap okunamaz. Gönderildi varsay.
-setMsg("Gönderildi ✅ (Sheet’te kontrol et)", true);
+      // no-cors yüzünden cevap okunamaz; gönderildi varsayıyoruz.
+      setMsg("Gönderildi ✅ (Sheet’te kontrol et)", true);
 
-// Alanları temizle
-["adSoyad","telefon","il","ilce","butce","metrekare","not"].forEach(id=>{
-  const el = document.getElementById(id);
-  if(el) el.value = "";
-});
-        ["adSoyad","telefon","il","ilce","butce","metrekare","not"].forEach(id=>{
-          const el = document.getElementById(id);
-          if(el) el.value = "";
-        });
-      } else {
-        setMsg("Hata: " + (j.error || txt || res.status), false);
-      }
+      // Alanları temizle
+      ["adSoyad","telefon","il","ilce","butce","metrekare","not"].forEach(id=>{
+        const el = document.getElementById(id);
+        if(el) el.value = "";
+      });
 
     } catch(err){
       setMsg("Bağlantı hatası: " + err.message, false);
