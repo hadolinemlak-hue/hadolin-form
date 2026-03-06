@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HADOLİN CRM Dashboard</title>
+
+    <style>
+        *{
+            box-sizing:border-box;
+        }
+
+        body{
+            margin:0;
+            font-family:Arial, sans-serif;
+            background:#0b1120;
+            color:#ffffff;
+        }
+
+        .container{
+            max-width:1200px;
+            margin:0 auto;
+            padding:24px;
+        }
+
+        .topbar{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:16px;
+            flex-wrap:wrap;
+            margin-bottom:24px;
+        }
+
+        .title-box h1{
+            margin:0;
+            font-size:30px;
+            font-weight:800;
+            letter-spacing:0.3px;
+        }
+
+        .title-box p{
+            margin:8px 0 0 0;
+            color:#94a3b8;
+            font-size:14px;
+        }
+
+        .top-actions{
+            display:flex;
+            gap:12px;
+            flex-wrap:wrap;
+        }
+
+        .action-btn{
+            display:inline-block;
+            padding:12px 16px;
+            border-radius:10px;
+            text-decoration:none;
+            font-weight:700;
+            border:none;
+            cursor:pointer;
+        }
+
+        .btn-primary{
+            background:#2563eb;
+            color:white;
+        }
+
+        .btn-secondary{
+            background:#1e293b;
+            color:white;
+        }
+
+        .hero{
+            background:linear-gradient(135deg, #111827, #172554);
+            border:1px solid rgba(255,255,255,0.06);
+            border-radius:22px;
+            padding:24px;
+            margin-bottom:24px;
+            box-shadow:0 20px 40px rgba(0,0,0,0.25);
+        }
+
+        .hero h2{
+            margin:0 0 10px 0;
+            font-size:22px;
+        }
+
+        .hero p{
+            margin:0;
+            color:#cbd5e1;
+            line-height:1.6;
+        }
+
+        .dashboard{
+            display:grid;
+            grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+            gap:18px;
+            margin-bottom:24px;
+        }
+
+        .card{
+            position:relative;
+            background:#111827;
+            border:1px solid rgba(255,255,255,0.06);
+            border-radius:18px;
+            padding:22px;
+            box-shadow:0 14px 30px rgba(0,0,0,0.22);
+            overflow:hidden;
+        }
+
+        .card::before{
+            content:"";
+            position:absolute;
+            left:0;
+            top:0;
+            width:6px;
+            height:100%;
+            border-radius:18px 0 0 18px;
+        }
+
+        .card.total::before{
+            background:#60a5fa;
+        }
+
+        .card.hot::before{
+            background:#f97316;
+        }
+
+        .card.warm::before{
+            background:#facc15;
+        }
+
+        .card.cold::before{
+            background:#38bdf8;
+        }
+
+        .card-label{
+            font-size:14px;
+            color:#94a3b8;
+            margin-bottom:10px;
+            font-weight:700;
+            letter-spacing:0.2px;
+        }
+
+        .card-value{
+            font-size:40px;
+            font-weight:800;
+            line-height:1;
+            margin-bottom:10px;
+        }
+
+        .card-note{
+            font-size:13px;
+            color:#cbd5e1;
+        }
+
+        .toolbar{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:14px;
+            flex-wrap:wrap;
+            margin-bottom:20px;
+            padding:18px;
+            background:#111827;
+            border:1px solid rgba(255,255,255,0.06);
+            border-radius:16px;
+        }
+
+        .toolbar-left,
+        .toolbar-right{
+            display:flex;
+            gap:10px;
+            flex-wrap:wrap;
+            align-items:center;
+        }
+
+        input, select, button{
+            padding:12px 14px;
+            border:none;
+            border-radius:10px;
+            font-size:14px;
+        }
+
+        input, select{
+            background:#1f2937;
+            color:white;
+            min-width:180px;
+        }
+
+        input::placeholder{
+            color:#94a3b8;
+        }
+
+        button{
+            background:#2563eb;
+            color:white;
+            font-weight:700;
+            cursor:pointer;
+        }
+
+        .table-wrap{
+            background:#111827;
+            border:1px solid rgba(255,255,255,0.06);
+            border-radius:18px;
+            overflow:hidden;
+            box-shadow:0 14px 30px rgba(0,0,0,0.22);
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+        }
+
+        th{
+            background:#1e293b;
+            color:#e2e8f0;
+            padding:14px 12px;
+            text-align:left;
+            font-size:14px;
+        }
+
+        td{
+            padding:14px 12px;
+            border-top:1px solid #243041;
+            font-size:14px;
+            color:#f8fafc;
+        }
+
+        tr:hover{
+            background:#172033;
+        }
+
+        .badge{
+            display:inline-block;
+            padding:8px 10px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:700;
+            white-space:nowrap;
+        }
+
+        .badge-hot{
+            background:rgba(249,115,22,0.15);
+            color:#fdba74;
+        }
+
+        .badge-warm{
+            background:rgba(250,204,21,0.14);
+            color:#fde047;
+        }
+
+        .badge-cold{
+            background:rgba(56,189,248,0.14);
+            color:#7dd3fc;
+        }
+
+        .wa-link{
+            color:#22c55e;
+            text-decoration:none;
+            font-weight:800;
+        }
+
+        .edit-link{
+            color:#60a5fa;
+            text-decoration:none;
+            font-weight:700;
+            margin-right:10px;
+        }
+
+        .delete-link{
+            color:#f87171;
+            text-decoration:none;
+            font-weight:700;
+        }
+
+        .empty{
+            padding:28px;
+            text-align:center;
+            color:#94a3b8;
+        }
+
+        @media (max-width: 768px){
+            .container{
+                padding:16px;
+            }
+
+            .title-box h1{
+                font-size:24px;
+            }
+
+            .card-value{
+                font-size:32px;
+            }
+
+            .table-wrap{
+                overflow-x:auto;
+            }
+
+            table{
+                min-width:1100px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="topbar">
+            <div class="title-box">
+                <h1>HADOLİN CRM Dashboard</h1>
+                <p>Müşteri akışını burada tut. Dağınık veri, sessiz kayıptır.</p>
+            </div>
+
+            <div class="top-actions">
+                <a href="/" class="action-btn btn-primary">+ Yeni Müşteri</a>
+                <a href="/musteriler" class="action-btn btn-secondary">Listeyi Yenile</a>
+            </div>
+        </div>
+
+        <div class="hero">
+            <h2>Bugünün resmi</h2>
+            <p>
+                Toplam müşteri havuzunu, sıcak temasları ve pasif kalanları tek bakışta gör.
+                Emlakta şans diye satılan şeyin büyük kısmı aslında düzenli takipten ibarettir.
+            </p>
+        </div>
+
+        <div class="dashboard">
+            <div class="card total">
+                <div class="card-label">Toplam Müşteri</div>
+                <div class="card-value">{{toplam}}</div>
+                <div class="card-note">Sistemde kayıtlı tüm müşteri sayısı</div>
+            </div>
+
+            <div class="card hot">
+                <div class="card-label">🔥 Sıcak</div>
+                <div class="card-value">{{sicak}}</div>
+                <div class="card-note">Karara yakın, öncelikli takip</div>
+            </div>
+
+            <div class="card warm">
+                <div class="card-label">🟡 İlgileniyor</div>
+                <div class="card-value">{{ilgili}}</div>
+                <div class="card-note">Doğru portföyle ısınabilir</div>
+            </div>
+
+            <div class="card cold">
+                <div class="card-label">❄️ Pasif</div>
+                <div class="card-value">{{pasif}}</div>
+                <div class="card-note">Takip planı olmadan kaybolur</div>
+            </div>
+        </div>
+
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <form method="get" action="/musteriler" style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <select name="tip">
+                        <option value="">Tüm Tipler</option>
+                        <option value="Satılık" {% if secili_tip == "Satılık" %}selected{% endif %}>Satılık</option>
+                        <option value="Kiralık" {% if secili_tip == "Kiralık" %}selected{% endif %}>Kiralık</option>
+                    </select>
+                    <button type="submit">Filtrele</button>
+                </form>
+            </div>
+
+            <div class="toolbar-right">
+                <input type="text" id="search" placeholder="Müşteri ara...">
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            {% if musteriler and musteriler|length > 0 %}
+            <table>
+                <tr>
+                    <th>Ad Soyad</th>
+                    <th>Telefon</th>
+                    <th>Talep</th>
+                    <th>Bütçe</th>
+                    <th>Mevkii</th>
+                    <th>Tip</th>
+                    <th>Kategori</th>
+                    <th>Durum</th>
+                    <th>WhatsApp</th>
+                    <th>İşlem</th>
+                </tr>
+
+                {% for m in musteriler %}
+                <tr>
+                    <td>{{ m["Ad Soyad"] }}</td>
+                    <td>{{ m["Telefon"] }}</td>
+                    <td>{{ m["Talep"] }}</td>
+                    <td>{{ m["Bütçe"] }}</td>
+                    <td>{{ m["Mevkii"] }}</td>
+                    <td>{{ m["Tip"] }}</td>
+                    <td>{{ m["Kategori"] }}</td>
+                    <td>
+                        {% if "Sıcak" in m["Durum"] %}
+                            <span class="badge badge-hot">{{ m["Durum"] }}</span>
+                        {% elif "İlgileniyor" in m["Durum"] %}
+                            <span class="badge badge-warm">{{ m["Durum"] }}</span>
+                        {% else %}
+                            <span class="badge badge-cold">{{ m["Durum"] }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a class="wa-link" href="https://wa.me/90{{ m['Telefon'] }}" target="_blank">Mesaj</a>
+                    </td>
+                    <td>
+                        <a href="/duzenle/{{ m['index'] }}" class="edit-link">Düzenle</a>
+                        <a href="/sil/{{ m['index'] }}"
+                           class="delete-link"
+                           onclick="return confirm('Bu müşteriyi silmek istediğine emin misin?')">Sil</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+            <div class="empty">
+                Henüz müşteri yok. Önce yeni kayıt gir, sonra bu panel canlanır.
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <script>
+        document.getElementById("search").addEventListener("keyup", function() {
+            let value = this.value.toLowerCase();
+            let rows = document.querySelectorAll("table tr");
+
+            rows.forEach((row, i) => {
+                if (i === 0) return;
+                let text = row.innerText.toLowerCase();
+                row.style.display = text.includes(value) ? "" : "none";
+            });
+        });
+    </script>
+</body>
+</html>
